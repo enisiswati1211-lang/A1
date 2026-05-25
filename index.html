@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <html lang="id">
 
 <head>
@@ -344,6 +346,78 @@
         .rekap-item small { color: #8a8a98; display: block; margin-top: 3px; }
         .rekap-total { color: #30d158; font-weight: 800; white-space: nowrap; }
 
+
+
+        .btn-image { background: linear-gradient(135deg, #ff4500 0%, #ff7a00 100%); box-shadow: 0 6px 20px rgba(255, 69, 0, 0.25); }
+        .btn-image:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 69, 0, 0.4); }
+
+        .nota-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.78);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 18px;
+        }
+        .nota-modal.active { display: flex; }
+        .nota-panel {
+            width: 100%;
+            max-width: 520px;
+            background: #111115;
+            border: 1px solid #2a2a34;
+            border-radius: 22px;
+            padding: 18px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.65);
+        }
+        .nota-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+        .nota-panel-header h3 {
+            color: #ffffff;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-close-nota {
+            background: #22222a;
+            color: #ffffff;
+            border: 1px solid #333340;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: 800;
+        }
+        .nota-preview-wrap {
+            background: #08080a;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid #22222a;
+            max-height: 68vh;
+            overflow: auto;
+        }
+        #canvas-nota {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+            background: #ffffff;
+        }
+        .nota-modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        .btn-download { background: #22222a; border: 1px solid #32323f; color: #d1d1d6; }
+        .btn-share { background: linear-gradient(135deg, #25D366 0%, #1cbd59 100%); }
+
         @media (max-width: 600px) {
             .row-grid, .row-split { grid-template-columns: 1fr; }
             .action-buttons { flex-direction: column; }
@@ -506,6 +580,8 @@
 
         <button class="btn-main btn-copy" onclick="salinRincianDanSimpan()">📋 Salin Rincian</button>
 
+        <button class="btn-main btn-image" onclick="buatNotaGambar()">🧾 Nota Gambar</button>
+
         <button class="btn-main btn-wa" onclick="kirimWhatsApp()">💬 Kirim Ke WA</button>
 
     </div>
@@ -621,6 +697,23 @@
 </div>
 
 
+
+
+<div id="nota-modal" class="nota-modal">
+    <div class="nota-panel">
+        <div class="nota-panel-header">
+            <h3>Preview Nota Gambar</h3>
+            <button class="btn-close-nota" onclick="tutupNotaModal()">×</button>
+        </div>
+        <div class="nota-preview-wrap">
+            <canvas id="canvas-nota" width="1080" height="1350"></canvas>
+        </div>
+        <div class="nota-modal-actions">
+            <button class="btn-main btn-download" onclick="downloadNotaGambar()">⬇️ Download PNG</button>
+            <button class="btn-main btn-share" onclick="shareNotaGambar()">📤 Share WA</button>
+        </div>
+    </div>
+</div>
 
 <script>
 
@@ -824,7 +917,18 @@
 
         currentDataRecord = {
 
-            nama: nama, bahan: bText, laminasi: lamText + (cbCutting ? ' + Cut' : ''), dimensi: `${lb}x${pj} (${qty})`, numModal: modalTotal, numJual: hargaJualMurni
+            nama: nama,
+            bahan: bText,
+            laminasi: lamText + (cbCutting ? ' + Cut' : ''),
+            dimensi: `${lb}x${pj} (${qty})`,
+            lebar: lb,
+            panjang: pj,
+            qty: qty,
+            cutting: cbCutting,
+            biayaTambahan: biayaTambahan,
+            marginPct: marginPct,
+            numModal: modalTotal,
+            numJual: hargaJualMurni
 
         };
 
@@ -1057,6 +1161,213 @@
     }
 
 
+
+
+
+    function pecahBarisCanvas(ctx, text, x, y, maxWidth, lineHeight) {
+        const words = String(text || '').split(' ');
+        let line = '';
+        let lines = [];
+        words.forEach(word => {
+            const testLine = line ? line + ' ' + word : word;
+            if (ctx.measureText(testLine).width > maxWidth && line) {
+                lines.push(line);
+                line = word;
+            } else {
+                line = testLine;
+            }
+        });
+        lines.push(line);
+        lines.forEach((l, i) => ctx.fillText(l, x, y + (i * lineHeight)));
+        return y + (lines.length * lineHeight);
+    }
+
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+    }
+
+    function buatNotaGambar() {
+        if (!document.getElementById('lebar').value || !document.getElementById('panjang').value) {
+            alert("Isi ukuran stiker dulu!");
+            return;
+        }
+
+        hitungTotal();
+
+        const canvas = document.getElementById('canvas-nota');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width;
+        const H = canvas.height;
+        const data = currentDataRecord;
+        const sekarang = new Date();
+        const tanggal = sekarang.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+        const jam = sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        const invoiceNo = 'FQD-' + formatTanggalLokal(sekarang).replaceAll('-', '') + '-' + String(sekarang.getHours()).padStart(2, '0') + String(sekarang.getMinutes()).padStart(2, '0');
+
+        ctx.clearRect(0, 0, W, H);
+
+        const grd = ctx.createLinearGradient(0, 0, W, H);
+        grd.addColorStop(0, '#fff7f0');
+        grd.addColorStop(0.45, '#ffffff');
+        grd.addColorStop(1, '#f3f4f8');
+        ctx.fillStyle = grd;
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.fillStyle = '#111115';
+        drawRoundedRect(ctx, 60, 60, 960, 1230, 42);
+        ctx.fill();
+
+        const header = ctx.createLinearGradient(60, 60, 1020, 310);
+        header.addColorStop(0, '#ff4500');
+        header.addColorStop(1, '#ff8a00');
+        ctx.fillStyle = header;
+        drawRoundedRect(ctx, 60, 60, 960, 250, 42);
+        ctx.fill();
+        ctx.fillStyle = '#111115';
+        ctx.fillRect(60, 270, 960, 80);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.16)';
+        ctx.beginPath(); ctx.arc(850, 95, 150, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(980, 230, 90, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '900 56px Montserrat, Arial';
+        ctx.fillText('FASTQUOTE', 105, 155);
+        ctx.font = '900 56px Montserrat, Arial';
+        ctx.fillText('DECAL', 105, 215);
+        ctx.font = '700 22px Montserrat, Arial';
+        ctx.fillText('NOTA PEMESANAN RESMI', 108, 260);
+
+        ctx.textAlign = 'right';
+        ctx.font = '700 24px Montserrat, Arial';
+        ctx.fillText(invoiceNo, 960, 155);
+        ctx.font = '600 22px Montserrat, Arial';
+        ctx.fillText(tanggal, 960, 198);
+        ctx.fillText(jam + ' WIB', 960, 235);
+        ctx.textAlign = 'left';
+
+        ctx.fillStyle = '#ffffff';
+        drawRoundedRect(ctx, 105, 355, 870, 142, 26);
+        ctx.fill();
+        ctx.fillStyle = '#777777';
+        ctx.font = '700 22px Montserrat, Arial';
+        ctx.fillText('NAMA KONSUMEN / ORDERAN', 140, 405);
+        ctx.fillStyle = '#111115';
+        ctx.font = '900 42px Montserrat, Arial';
+        pecahBarisCanvas(ctx, data.nama || 'Tanpa Nama', 140, 455, 760, 48);
+
+        const startY = 555;
+        const rowH = 82;
+        const labelX = 140;
+        const valueX = 500;
+        const rows = [
+            ['Jenis Bahan', data.bahan || '-'],
+            ['Finishing', data.laminasi || '-'],
+            ['Ukuran', `${data.lebar || 0} cm × ${data.panjang || 0} cm`],
+            ['Jumlah', `${data.qty || 1} pcs`],
+            ['Cutting Pola', data.cutting ? 'Ya, pakai cutting pola' : 'Tidak'],
+            ['Biaya Desain/Pasang', fmt.format(data.biayaTambahan || 0)]
+        ];
+
+        rows.forEach((row, index) => {
+            const y = startY + (index * rowH);
+            ctx.fillStyle = index % 2 === 0 ? '#18181f' : '#141419';
+            drawRoundedRect(ctx, 105, y - 38, 870, 66, 18);
+            ctx.fill();
+            ctx.fillStyle = '#888895';
+            ctx.font = '700 23px Montserrat, Arial';
+            ctx.fillText(row[0], labelX, y + 4);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '800 25px Montserrat, Arial';
+            pecahBarisCanvas(ctx, row[1], valueX, y + 4, 410, 30);
+        });
+
+        ctx.setLineDash([14, 12]);
+        ctx.strokeStyle = '#353542';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(105, 1057);
+        ctx.lineTo(975, 1057);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#ff9f0a';
+        ctx.font = '800 26px Montserrat, Arial';
+        ctx.fillText('MODAL INTERN TOKO', 140, 1110);
+        ctx.textAlign = 'right';
+        ctx.fillText(fmt.format(data.numModal || 0), 940, 1110);
+        ctx.textAlign = 'left';
+
+        const totalBox = ctx.createLinearGradient(105, 1140, 975, 1245);
+        totalBox.addColorStop(0, '#20c45a');
+        totalBox.addColorStop(1, '#30d158');
+        ctx.fillStyle = totalBox;
+        drawRoundedRect(ctx, 105, 1140, 870, 105, 26);
+        ctx.fill();
+        ctx.fillStyle = '#082412';
+        ctx.font = '800 24px Montserrat, Arial';
+        ctx.fillText('TOTAL BIAYA', 140, 1182);
+        ctx.textAlign = 'right';
+        ctx.font = '900 48px Montserrat, Arial';
+        ctx.fillText(fmt.format(data.numJual || 0), 940, 1208);
+        ctx.textAlign = 'left';
+
+        ctx.fillStyle = '#8a8a98';
+        ctx.font = '600 20px Montserrat, Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Terima kasih sudah mempercayakan pesanan Anda kepada kami.', W / 2, 1280);
+        ctx.textAlign = 'left';
+
+        document.getElementById('nota-modal').classList.add('active');
+    }
+
+    function tutupNotaModal() {
+        document.getElementById('nota-modal').classList.remove('active');
+    }
+
+    function downloadNotaGambar() {
+        const canvas = document.getElementById('canvas-nota');
+        const link = document.createElement('a');
+        const namaFile = (currentDataRecord.nama || 'nota').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        link.download = `nota-${namaFile || 'fastquote'}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    async function shareNotaGambar() {
+        const canvas = document.getElementById('canvas-nota');
+        canvas.toBlob(async function(blob) {
+            const namaFile = (currentDataRecord.nama || 'nota').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            const file = new File([blob], `nota-${namaFile || 'fastquote'}.png`, { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Nota FastQuote Decal',
+                        text: `Nota pesanan ${currentDataRecord.nama || ''}`
+                    });
+                    simpanKeRiwayatLokal();
+                } catch (err) {
+                    console.log('Share dibatalkan:', err);
+                }
+            } else {
+                downloadNotaGambar();
+                const urlWA = `https://api.whatsapp.com/send?text=${encodeURIComponent(teksNotaClient + '\n\nNota gambar sudah diunduh, silakan lampirkan PNG di WhatsApp.')}`;
+                window.open(urlWA, '_blank');
+            }
+        }, 'image/png');
+    }
 
     function hapusSemuaRiwayat() { if (confirm("Hapus semua riwayat di perangkat ini?")) { daftarRiwayat = []; localStorage.removeItem('fastquote_history'); renderTabelRiwayat(); rekapResellerBulanan(); } }
 
