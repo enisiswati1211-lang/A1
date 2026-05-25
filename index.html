@@ -1,0 +1,1087 @@
+<html lang="id">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FastQuote Decal - Premium System</title>
+
+    <style>
+
+        * { box-sizing: border-box; font-family: 'Montserrat', 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; }
+
+        
+
+        body { 
+
+            background-color: #08080a; 
+
+            background-image: 
+
+                radial-gradient(circle at 50% 0%, rgba(255, 69, 0, 0.15) 0%, transparent 50%),
+
+                linear-gradient(135deg, #08080a 0%, #111115 100%);
+
+            color: #f1f1f3; 
+
+            display: flex; 
+
+            flex-direction: column; 
+
+            align-items: center; 
+
+            justify-content: flex-start; 
+
+            min-height: 100vh; 
+
+            padding: 40px 15px; 
+
+        }
+
+
+
+        .brand-header { text-align: center; margin-bottom: 30px; position: relative; }
+
+        .brand-logo { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; color: #ffffff; }
+
+        .brand-logo span { color: #ff4500; text-shadow: 0 0 15px rgba(255, 69, 0, 0.6); }
+
+        .brand-tagline { font-size: 10px; text-transform: uppercase; letter-spacing: 6px; color: #666673; margin-top: 4px; font-weight: 600; }
+
+        .brand-stripe { width: 50px; height: 3px; background: #ff4500; margin: 12px auto 0 auto; border-radius: 2px; }
+
+
+
+        .container, .history-container { 
+
+            background: rgba(19, 19, 24, 0.85);
+
+            backdrop-filter: blur(10px);
+
+            padding: 30px; 
+
+            border-radius: 20px; 
+
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
+
+            width: 100%; 
+
+            max-width: 550px; 
+
+            border: 1px solid rgba(255, 255, 255, 0.03);
+
+            margin-bottom: 25px; 
+
+        }
+
+
+
+        .container { border-top: 4px solid #ff4500; }
+
+
+
+        .form-group { margin-bottom: 18px; }
+
+        .row-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+        .row-split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        
+
+        label { display: block; margin-bottom: 8px; font-size: 10px; color: #8a8a98; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        
+
+        input, select { 
+
+            width: 100%; 
+
+            padding: 14px 16px; 
+
+            border: 1px solid #22222a; 
+
+            background-color: #16161c; 
+
+            color: #fff; 
+
+            border-radius: 10px; 
+
+            font-size: 14px; 
+
+            outline: none; 
+
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+
+        }
+
+        
+
+        input:focus, select:focus { 
+
+            border-color: #ff4500; 
+
+            background-color: #1a1a24;
+
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.15);
+
+        }
+
+
+
+        .input-nama { border-left: 3px solid #ff4500; font-weight: 600; }
+
+        
+
+        .search-bahan { 
+
+            border-left: 3px solid #ffaa00; 
+
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23666673" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>'); 
+
+            background-repeat: no-repeat; 
+
+            background-position: calc(100-16px) center; 
+
+            background-position: right 16px center;
+
+        }
+
+
+
+        select[size] { min-height: 110px; padding: 6px; }
+
+        select[size] option { padding: 10px; border-radius: 6px; margin-bottom: 4px; cursor: pointer; }
+
+        select[size] option:checked { background: linear-gradient(90deg, #ff4500, #ff6200) !important; color: white; }
+
+
+
+        .checkbox-group { 
+
+            display: flex; 
+
+            align-items: center; 
+
+            background: #16161c; 
+
+            padding: 14px 16px; 
+
+            border-radius: 10px; 
+
+            border: 1px solid #22222a; 
+
+            cursor: pointer; 
+
+            user-select: none; 
+
+            transition: 0.2s; 
+
+        }
+
+        .checkbox-group:hover { border-color: rgba(255,69,0,0.4); }
+
+        .checkbox-group input { width: auto; margin-right: 12px; transform: scale(1.2); accent-color: #ff4500; }
+
+        .checkbox-group label { margin-bottom: 0; cursor: pointer; font-size: 13px; color: #d1d1d6; text-transform: none; letter-spacing: 0; }
+
+
+
+        .result-box { 
+
+            background: linear-gradient(180deg, #16161c 0%, #0d0d12 100%);
+
+            padding: 22px; 
+
+            margin-top: 25px; 
+
+            border-radius: 14px; 
+
+            border: 1px solid #22222a; 
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+        .result-box::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #30d158; }
+
+
+
+        .result-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; color: #9a9a1a; color: #8a8a98; }
+
+        .result-row span:last-child { font-weight: 600; color: #ffffff; }
+
+        
+
+        .result-title { font-size: 10px; color: #8a8a98; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px; font-weight: 700; }
+
+        .result-value-jual { font-size: 36px; font-weight: 900; color: #30d158; margin-top: 4px; letter-spacing: -0.5px; }
+
+
+
+        .action-buttons { display: flex; gap: 12px; margin-top: 25px; }
+
+        .btn-main { 
+
+            flex: 1; 
+
+            padding: 16px; 
+
+            color: white; 
+
+            border: none; 
+
+            border-radius: 12px; 
+
+            font-size: 13px; 
+
+            font-weight: 700; 
+
+            cursor: pointer; 
+
+            text-transform: uppercase; 
+
+            letter-spacing: 1px; 
+
+            transition: all 0.2s ease; 
+
+            display: flex; 
+
+            align-items: center; 
+
+            justify-content: center; 
+
+            gap: 8px; 
+
+        }
+
+        
+
+        .btn-copy { background: #22222a; border: 1px solid #32323f; color: #d1d1d6; }
+
+        .btn-copy:hover { background: #2c2c36; color: #fff; transform: translateY(-2px); }
+
+        
+
+        .btn-wa { background: linear-gradient(135deg, #25D366 0%, #1cbd59 100%); box-shadow: 0 6px 20px rgba(37, 211, 102, 0.25); }
+
+        .btn-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4); }
+
+
+
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #22222a; padding-bottom: 12px; }
+
+        .history-header h3 { color: #ff4500; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+
+        
+
+        .table-responsive { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; }
+
+        th, td { padding: 14px 12px; border-bottom: 1px solid #16161c; white-space: nowrap; }
+
+        th { background-color: #0d0d12; color: #666673; font-weight: 700; text-transform: uppercase; font-size: 9px; letter-spacing: 1px; border-radius: 4px; }
+
+        tr:hover { background-color: #16161c; }
+
+        
+
+        .row-total-summary { background-color: #0d0d12 !important; font-weight: bold; border-top: 2px solid #22222a; }
+
+        .text-green { color: #30d158; font-weight: 700; }
+
+        .text-orange { color: #ff9f0a; font-weight: 700; }
+
+        .text-time { color: #555562; font-size: 11px; }
+
+
+        .btn-clear {
+            background: #2a1111;
+            color: #ff6b6b;
+            border: 1px solid #4a1f1f;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-clear:hover { background: #3a1717; color: #ffffff; }
+
+        .rekap-box {
+            margin-top: 25px;
+            border-top: 1px solid #22222a;
+            padding-top: 20px;
+        }
+        .rekap-box h3 {
+            color: #ff4500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        .rekap-list {
+            margin-top: 15px;
+            max-height: 260px;
+            overflow-y: auto;
+            border: 1px solid #22222a;
+            border-radius: 12px;
+        }
+        .rekap-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #16161c;
+            font-size: 12px;
+        }
+        .rekap-item:last-child { border-bottom: none; }
+        .rekap-item strong { color: #ffffff; }
+        .rekap-item small { color: #8a8a98; display: block; margin-top: 3px; }
+        .rekap-total { color: #30d158; font-weight: 800; white-space: nowrap; }
+
+        @media (max-width: 600px) {
+            .row-grid, .row-split { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+            .container, .history-container { padding: 22px; }
+            .result-value-jual { font-size: 30px; }
+        }
+        .no-data { text-align: center; color: #44444f; padding: 35px 0; font-style: italic; }
+
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+
+
+<div class="brand-header">
+
+    <div class="brand-logo">FastQuote <span>Decal</span></div>
+
+    <div class="brand-tagline">Pro Calculator System</div>
+
+    <div class="brand-stripe"></div>
+
+</div>
+
+
+
+<div class="container">
+
+    <div class="form-group">
+
+        <label for="nama-order">Nama Konsumen / Orderan</label>
+
+        <input type="text" id="nama-order" class="input-nama" placeholder="Contoh: Honda CRF Dani" oninput="hitungTotal()">
+
+    </div>
+
+
+
+    <div class="row-grid form-group">
+
+        <div>
+
+            <label for="lebar">Lebar (cm)</label>
+
+            <input type="number" id="lebar" placeholder="124" oninput="hitungTotal()">
+
+        </div>
+
+        <div>
+
+            <label for="panjang">Panjang (cm)</label>
+
+            <input type="number" id="panjang" placeholder="80" oninput="hitungTotal()">
+
+        </div>
+
+        <div>
+
+            <label for="jumlah">Jumlah (Qty)</label>
+
+            <input type="number" id="jumlah" value="1" min="1" oninput="hitungTotal()">
+
+        </div>
+
+    </div>
+
+
+
+    <div class="form-group">
+
+        <label for="search-bahan">Cari & Pilih Bahan</label>
+
+        <input type="text" id="search-bahan" class="search-bahan" placeholder="Ketik nama bahan..." oninput="filterBahan()">
+
+        <select id="bahan" size="4" style="margin-top: 8px;" onchange="updateLaminasiOptions()"></select>
+
+    </div>
+
+
+
+    <div class="form-group">
+
+        <label for="laminasi">Pilih Jenis Laminasi</label>
+
+        <select id="laminasi" onchange="hitungTotal()"></select>
+
+    </div>
+
+
+
+    <div class="row-split form-group">
+
+        <div>
+
+            <label for="margin">Mark-up Untung (%)</label>
+
+            <input type="number" id="margin" value="30" min="0" oninput="hitungTotal()">
+
+        </div>
+
+        <div>
+
+            <label for="biaya-tambahan">Biaya Desain / Pasang (Rp)</label>
+
+            <input type="number" id="biaya-tambahan" value="0" min="0" placeholder="0" oninput="hitungTotal()">
+
+        </div>
+
+    </div>
+
+
+
+    <div class="form-group">
+
+        <div class="checkbox-group" onclick="toggleCheckbox()">
+
+            <input type="checkbox" id="cutting" onchange="hitungTotal()" onclick="event.stopPropagation()">
+
+            <label for="cutting">Pakai Cutting Pola (+Rp2/cm²)</label>
+
+        </div>
+
+    </div>
+
+    
+
+    <div class="result-box">
+
+        <div class="result-row">
+
+            <span>Luas Total</span>
+
+            <span id="luas-info">0 cm²</span>
+
+        </div>
+
+        <div class="result-row">
+
+            <span>Modal Intern Toko</span>
+
+            <span id="total-modal" style="color: #ff9f0a;">Rp 0</span>
+
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #22222a; margin: 12px 0;">
+
+        <div class="result-title">Harga Jual Akhir Ke Konsumen</div>
+
+        <div class="result-value-jual" id="total-harga-jual">Rp 0</div>
+
+    </div>
+
+
+
+    <div class="action-buttons">
+
+        <button class="btn-main btn-copy" onclick="salinRincianDanSimpan()">📋 Salin Rincian</button>
+
+        <button class="btn-main btn-wa" onclick="kirimWhatsApp()">💬 Kirim Ke WA</button>
+
+    </div>
+
+</div>
+
+
+
+<div class="history-container">
+
+    <div class="history-header">
+
+        <h3>📋 Log Riwayat Cetak</h3>
+
+        <button class="btn-clear" onclick="hapusSemuaRiwayat()">🗑️ Clear</button>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Waktu</th>
+
+                    <th>Nama Orderan</th>
+
+                    <th>Bahan & Lapisan</th>
+
+                    <th>Ukuran (Qty)</th>
+
+                    <th>Modal</th>
+
+                    <th>Harga Jual</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="log-riwayat"></tbody>
+
+            <tfoot id="tfoot-total"></tfoot>
+
+        </table>
+
+    </div>
+
+    <div class="rekap-box">
+
+        <h3>🔍 Rekap Reseller Bulanan</h3>
+
+        <div class="row-split form-group">
+
+            <div>
+
+                <label for="cari-reseller">Cari Nama Reseller / Konsumen</label>
+
+                <input type="text" id="cari-reseller" placeholder="Contoh: Adit / Angga" oninput="rekapResellerBulanan()">
+
+            </div>
+
+            <div>
+
+                <label for="bulan-reseller">Pilih Bulan</label>
+
+                <input type="month" id="bulan-reseller" onchange="rekapResellerBulanan()">
+
+            </div>
+
+        </div>
+
+        <div class="result-box">
+
+            <div class="result-row">
+
+                <span>Nama Dicari</span>
+
+                <span id="hasil-nama-reseller">-</span>
+
+            </div>
+
+            <div class="result-row">
+
+                <span>Total Transaksi</span>
+
+                <span id="hasil-jumlah-transaksi">0 order</span>
+
+            </div>
+
+            <div class="result-row">
+
+                <span>Total Modal</span>
+
+                <span id="hasil-modal-reseller" style="color:#ff9f0a;">Rp 0</span>
+
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #22222a; margin: 12px 0;">
+
+            <div class="result-title">Total Pesanan Bulan Dipilih</div>
+
+            <div class="result-value-jual" id="hasil-total-reseller">Rp 0</div>
+
+        </div>
+
+        <div id="detail-rekap-reseller" class="rekap-list"></div>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+    const dataHarga = {
+
+        "MAXDECAL APV80": [{ n: "NON LAPISAN", h: 8.5 }, { n: "100GR Glosy/Doff", h: 10 }, { n: "120GR Glosy/Doff", h: 10.5 }, { n: "180 GSM", h: 15.5 }, { n: "VPF 100", h: 14 }, { n: "VPF500", h: 23.5 }, { n: "Gliter Doff", h: 15.5 }, { n: "Inflex SG 100", h: 12.5 }],
+
+        "MAXDECAL HIGHGRIP": [{ n: "NON LAPISAN", h: 13.5 }, { n: "100GR Glosy/Doff", h: 15 }, { n: "120GR Glosy/Doff", h: 15.5 }, { n: "180 GSM", h: 20.5 }, { n: "VPF 100", h: 19 }, { n: "VPF500", h: 28.5 }, { n: "Gliter Doff", h: 20.5 }, { n: "Inflex SG 100", h: 17.5 }],
+
+        "HOLOGRAM MAXDECAL": [{ n: "NON LAPISAN", h: 20 }, { n: "100GR Glosy/Doff", h: 21.5 }, { n: "120GR Glosy/Doff", h: 22 }, { n: "180 GSM", h: 27 }, { n: "VPF 100", h: 25.5 }, { n: "VPF500", h: 35 }, { n: "Gliter Doff", h: 27 }, { n: "Inflex SG 100", h: 24 }],
+
+        "CHROME MAXDECAL": [{ n: "NON LAPISAN", h: 15 }, { n: "100GR Glosy/Doff", h: 16.5 }, { n: "120GR Glosy/Doff", h: 17 }, { n: "180 GSM", h: 22 }, { n: "VPF 100", h: 20.5 }, { n: "VPF500", h: 30 }, { n: "Gliter Doff", h: 22 }, { n: "Inflex SG 100", h: 19 }],
+
+        "LMP MAXDECAL": [{ n: "NON LAPISAN", h: 6.5 }, { n: "100GR Glosy/Doff", h: 8 }, { n: "120GR Glosy/Doff", h: 8.5 }, { n: "180 GSM", h: 13.5 }, { n: "VPF 100", h: 12 }, { n: "VPF500", h: 21.5 }, { n: "Gliter Doff", h: 13.5 }, { n: "Inflex SG 100", h: 10.5 }],
+
+        "NON LABEL KINTECH/VTECH": [{ n: "NON LAPISAN", h: 5.5 }, { n: "100GR Glosy/Doff", h: 7 }, { n: "120GR Glosy/Doff", h: 7.5 }, { n: "180 GSM", h: 12.5 }, { n: "VPF 100", h: 11 }, { n: "VPF500", h: 20.5 }, { n: "Gliter Doff", h: 12.5 }, { n: "Inflex SG 100", h: 9.5 }],
+
+        "INFLEX": [{ n: "NON LAPISAN", h: 7 }, { n: "100GR Glosy/Doff", h: 8.5 }, { n: "120GR Glosy/Doff", h: 9 }, { n: "180 GSM", h: 14 }, { n: "VPF 100", h: 12.5 }, { n: "VPF500", h: 22 }, { n: "Gliter Doff", h: 14 }, { n: "Inflex SG 100", h: 11 }],
+
+        "HOLOGRAM NON LABEL": [{ n: "NON LAPISAN", h: 15 }, { n: "100GR Glosy/Doff", h: 16.5 }, { n: "120GR Glosy/Doff", h: 17 }, { n: "180 GSM", h: 22 }, { n: "VPF 100", h: 20.5 }, { n: "VPF500", h: 30 }, { n: "Gliter Doff", h: 22 }, { n: "Inflex SG 100", h: 19 }],
+
+        "CHROME NON LABEL": [{ n: "NON LAPISAN", h: 11 }, { n: "100GR Glosy/Doff", h: 12.5 }, { n: "120GR Glosy/Doff", h: 13 }, { n: "180 GSM", h: 18 }, { n: "VPF 100", h: 16.5 }, { n: "VPF500", h: 26 }, { n: "Gliter Doff", h: 18 }, { n: "Inflex SG 100", h: 15 }],
+
+        "ORACAL STABILO": [{ n: "NON LAPISAN", h: 35 }, { n: "100GR Glosy/Doff", h: 36.5 }, { n: "120GR Glosy/Doff", h: 37 }, { n: "180 GSM", h: 42 }, { n: "VPF 100", h: 40.5 }, { n: "VPF500", h: 50 }, { n: "Gliter Doff", h: 42 }, { n: "Inflex SG 100", h: 39 }],
+
+        "PHOTO PAPER LUSTER": [{ n: "NON LAPISAN", h: 8 }, { n: "100GR Glosy/Doff", h: 9.5 }, { n: "120GR Glosy/Doff", h: 10 }],
+
+        "TRANSPARAN MAXDECAL": [{ n: "UV DOFF", h: 15 }, { n: "UV GLOSY", h: 17 }],
+
+        "TRANSPARAN INFLEX": [{ n: "UV DOFF", h: 13 }, { n: "UV GLOSY", h: 15 }]
+
+    };
+
+
+
+    let daftarRiwayat = [];
+
+    const fmt = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 });
+
+
+
+    function initBahan() {
+
+        filterBahan();
+
+        const bSelect = document.getElementById('bahan');
+
+        if(bSelect.options.length > 0) {
+
+            bSelect.selectedIndex = 0;
+
+            updateLaminasiOptions();
+
+        }
+
+    }
+
+
+
+    function filterBahan() {
+
+        const keyword = document.getElementById('search-bahan').value.toLowerCase();
+
+        const bSelect = document.getElementById('bahan');
+
+        bSelect.innerHTML = '';
+
+        
+
+        for (let b in dataHarga) {
+
+            if (b.toLowerCase().includes(keyword)) {
+
+                let opt = document.createElement('option');
+
+                opt.value = b; opt.text = b;
+
+                bSelect.appendChild(opt);
+
+            }
+
+        }
+
+        if (bSelect.options.length > 0) {
+
+            bSelect.selectedIndex = 0;
+
+            updateLaminasiOptions();
+
+        } else {
+
+            document.getElementById('laminasi').innerHTML = '';
+
+            hitungTotal();
+
+        }
+
+    }
+
+
+
+    function updateLaminasiOptions() {
+
+        const bTerpilih = document.getElementById('bahan').value;
+
+        if(!bTerpilih) return;
+
+        const lamSelect = document.getElementById('laminasi');
+
+        
+
+        lamSelect.innerHTML = '';
+
+        dataHarga[bTerpilih].forEach(item => {
+
+            let opt = document.createElement('option');
+
+            opt.value = item.h;
+
+            opt.text = `${item.n} (Rp ${item.h})`;
+
+            lamSelect.appendChild(opt);
+
+        });
+
+        hitungTotal();
+
+    }
+
+
+
+    function toggleCheckbox() {
+
+        const cb = document.getElementById('cutting');
+
+        cb.checked = !cb.checked;
+
+        hitungTotal();
+
+    }
+
+
+
+    let teksNotaClient = "";
+
+    let currentDataRecord = {};
+
+
+
+    function hitungTotal() {
+
+        const nama = document.getElementById('nama-order').value || "Tanpa Nama";
+
+        const lb = parseFloat(document.getElementById('lebar').value) || 0;
+
+        const pj = parseFloat(document.getElementById('panjang').value) || 0;
+
+        const qty = parseInt(document.getElementById('jumlah').value) || 1;
+
+        const marginPct = parseFloat(document.getElementById('margin').value) || 0;
+
+        const biayaTambahan = parseFloat(document.getElementById('biaya-tambahan').value) || 0;
+
+        
+
+        const bText = document.getElementById('bahan').value || "Belum Pilih";
+
+        const lamSelect = document.getElementById('laminasi');
+
+        const lamText = lamSelect.options[lamSelect.selectedIndex]?.text.split(' (')[0] || "";
+
+        
+
+        let hDasar = parseFloat(lamSelect.value) || 0;
+
+        const cbCutting = document.getElementById('cutting').checked;
+
+
+
+        const luas = lb * pj;
+
+        if (cbCutting) hDasar += 2;
+
+        
+
+        const modalTotal = (luas * hDasar * qty);
+
+        const untung = modalTotal * (marginPct / 100);
+
+        let hargaJualMurni = modalTotal + untung + biayaTambahan;
+
+
+
+        document.getElementById('luas-info').innerText = `${luas.toLocaleString('id-ID')} cm² x ${qty} pcs`;
+
+        document.getElementById('total-modal').innerText = fmt.format(modalTotal);
+
+        document.getElementById('total-harga-jual').innerText = fmt.format(hargaJualMurni);
+
+
+
+        currentDataRecord = {
+
+            nama: nama, bahan: bText, laminasi: lamText + (cbCutting ? ' + Cut' : ''), dimensi: `${lb}x${pj} (${qty})`, numModal: modalTotal, numJual: hargaJualMurni
+
+        };
+
+
+
+        teksNotaClient = `*FASTQUOTE DECAL - NOTA PEMESANAN*\n-----------------------------------------\n• Konsumen     : ${nama}\n• Jenis Bahan  : ${bText}\n• Finishing     : ${lamText}\n• Ukuran        : ${lb} cm x ${pj} cm\n• Cutting       : ${cbCutting ? 'Ya' : 'Tidak'}\n• Jumlah        : ${qty} pcs\n${biayaTambahan > 0 ? `• Biaya Desain/Pasang : ${fmt.format(biayaTambahan)}\n` : ''}-----------------------------------------\n*Total Biaya:* ${fmt.format(hargaJualMurni)}\n\nTerima kasih! 🙏`;
+
+    }
+
+
+
+    function simpanKeRiwayatLokal() {
+
+        const sekarang = new Date();
+
+        const jamStr = sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+        const tanggalStr = formatTanggalLokal(sekarang);
+
+        const bulanStr = tanggalStr.slice(0, 7);
+
+        const recordBaru = { waktu: jamStr, tanggal: tanggalStr, bulan: bulanStr, ...currentDataRecord };
+
+        daftarRiwayat.unshift(recordBaru);
+
+        localStorage.setItem('fastquote_history', JSON.stringify(daftarRiwayat));
+
+        renderTabelRiwayat();
+
+        rekapResellerBulanan();
+
+    }
+
+
+
+    function salinRincianDanSimpan() {
+
+        if (!document.getElementById('lebar').value || !document.getElementById('panjang').value) { alert("Isi ukuran stiker!"); return; }
+
+        navigator.clipboard.writeText(teksNotaClient).then(() => {
+
+            simpanKeRiwayatLokal();
+
+            alert(`Nota "${currentDataRecord.nama}" berhasil disalin ke memori!`);
+
+        });
+
+    }
+
+
+
+    function kirimWhatsApp() {
+
+        if (!document.getElementById('lebar').value || !document.getElementById('panjang').value) { alert("Isi ukuran stiker!"); return; }
+
+        simpanKeRiwayatLokal();
+
+        const urlWA = `https://api.whatsapp.com/send?text=${encodeURIComponent(teksNotaClient)}`;
+
+        window.open(urlWA, '_blank');
+
+    }
+
+
+
+    function renderTabelRiwayat() {
+
+        const tbody = document.getElementById('log-riwayat');
+
+        const tfoot = document.getElementById('tfoot-total');
+
+        tbody.innerHTML = ''; tfoot.innerHTML = '';
+
+        if (daftarRiwayat.length === 0) { tbody.innerHTML = `<tr><td colspan="6" class="no-data">Belum ada transaksi.</td></tr>`; return; }
+
+        let rekapModal = 0; let rekapJual = 0;
+
+        daftarRiwayat.forEach(item => {
+
+            rekapModal += item.numModal; rekapJual += item.numJual;
+
+            let row = document.createElement('tr');
+
+            row.innerHTML = `<td class="text-time">${item.waktu}</td><td style="color:#ff4500;font-weight:600;">${item.nama}</td><td><strong>${item.bahan}</strong><br><small style="color:#8a8a98">${item.laminasi}</small></td><td>${item.dimensi}</td><td class="text-orange">${fmt.format(item.numModal)}</td><td class="text-green">${fmt.format(item.numJual)}</td>`;
+
+            tbody.appendChild(row);
+
+        });
+
+        let footerRow = document.createElement('tr');
+
+        footerRow.className = "row-total-summary";
+
+        footerRow.innerHTML = `<td colspan="4" style="text-align:right;padding:14px 10px;">🔥 TOTAL REKAP :</td><td class="text-orange" style="padding:14px 10px;">${fmt.format(rekapModal)}</td><td class="text-green" style="padding:14px 10px;">${fmt.format(rekapJual)}</td>`;
+
+        tfoot.appendChild(footerRow);
+
+    }
+
+
+
+    function formatTanggalLokal(dateObj) {
+
+        const tahun = dateObj.getFullYear();
+
+        const bulan = String(dateObj.getMonth() + 1).padStart(2, '0');
+
+        const tanggal = String(dateObj.getDate()).padStart(2, '0');
+
+        return `${tahun}-${bulan}-${tanggal}`;
+
+    }
+
+
+
+    function migrasiRiwayatLama() {
+
+        const bulanSekarang = formatTanggalLokal(new Date()).slice(0, 7);
+
+        daftarRiwayat = daftarRiwayat.map(item => {
+
+            if (!item.tanggal) item.tanggal = `${bulanSekarang}-01`;
+
+            if (!item.bulan) item.bulan = item.tanggal.slice(0, 7);
+
+            return item;
+
+        });
+
+        localStorage.setItem('fastquote_history', JSON.stringify(daftarRiwayat));
+
+    }
+
+
+
+    function rekapResellerBulanan() {
+
+        const keyword = document.getElementById('cari-reseller')?.value.toLowerCase().trim() || '';
+
+        const bulanDipilih = document.getElementById('bulan-reseller')?.value || '';
+
+        const elNama = document.getElementById('hasil-nama-reseller');
+
+        const elJumlah = document.getElementById('hasil-jumlah-transaksi');
+
+        const elModal = document.getElementById('hasil-modal-reseller');
+
+        const elTotal = document.getElementById('hasil-total-reseller');
+
+        const elDetail = document.getElementById('detail-rekap-reseller');
+
+        if (!elNama || !elJumlah || !elModal || !elTotal || !elDetail) return;
+
+
+
+        if (!keyword || !bulanDipilih) {
+
+            elNama.innerText = '-';
+
+            elJumlah.innerText = '0 order';
+
+            elModal.innerText = fmt.format(0);
+
+            elTotal.innerText = fmt.format(0);
+
+            elDetail.innerHTML = `<div class="no-data">Ketik nama reseller dan pilih bulan.</div>`;
+
+            return;
+
+        }
+
+
+
+        const hasil = daftarRiwayat.filter(item => {
+
+            const namaOrder = (item.nama || '').toLowerCase();
+
+            const bulanOrder = item.bulan || (item.tanggal ? item.tanggal.slice(0, 7) : '');
+
+            return namaOrder.includes(keyword) && bulanOrder === bulanDipilih;
+
+        });
+
+
+
+        const totalModal = hasil.reduce((sum, item) => sum + Number(item.numModal || 0), 0);
+
+        const totalJual = hasil.reduce((sum, item) => sum + Number(item.numJual || 0), 0);
+
+
+
+        elNama.innerText = keyword.toUpperCase();
+
+        elJumlah.innerText = `${hasil.length} order`;
+
+        elModal.innerText = fmt.format(totalModal);
+
+        elTotal.innerText = fmt.format(totalJual);
+
+
+
+        if (hasil.length === 0) {
+
+            elDetail.innerHTML = `<div class="no-data">Tidak ada pesanan untuk nama tersebut pada bulan ini.</div>`;
+
+            return;
+
+        }
+
+
+
+        elDetail.innerHTML = hasil.map(item => `
+
+            <div class="rekap-item">
+
+                <div>
+
+                    <strong>${item.nama}</strong>
+
+                    <small>${item.tanggal || '-'} • ${item.bahan || '-'} • ${item.laminasi || '-'}</small>
+
+                </div>
+
+                <div class="rekap-total">${fmt.format(item.numJual || 0)}</div>
+
+            </div>
+
+        `).join('');
+
+    }
+
+
+
+    function hapusSemuaRiwayat() { if (confirm("Hapus semua riwayat di perangkat ini?")) { daftarRiwayat = []; localStorage.removeItem('fastquote_history'); renderTabelRiwayat(); rekapResellerBulanan(); } }
+
+    window.onload = function() {
+
+        const riwayatLama = localStorage.getItem('fastquote_history');
+
+        if (riwayatLama) daftarRiwayat = JSON.parse(riwayatLama);
+
+        migrasiRiwayatLama();
+
+        const bulanInput = document.getElementById('bulan-reseller');
+
+        if (bulanInput) bulanInput.value = formatTanggalLokal(new Date()).slice(0, 7);
+
+        renderTabelRiwayat();
+
+        initBahan();
+
+        rekapResellerBulanan();
+
+    }
+
+</script>
+
+</body>
+
+</html> 
