@@ -418,6 +418,57 @@
         .btn-download { background: #22222a; border: 1px solid #32323f; color: #d1d1d6; }
         .btn-share { background: linear-gradient(135deg, #25D366 0%, #1cbd59 100%); }
 
+
+        .auth-container {
+            background: rgba(19, 19, 24, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 18px;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 550px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 18px;
+        }
+        .auth-title {
+            color: #ff4500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .auth-status {
+            color: #8a8a98;
+            font-size: 12px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .auth-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .btn-auth {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+        .btn-login { background: #ff4500; color: white; }
+        .btn-register { background: #22222a; color: white; border: 1px solid #32323f; }
+        .btn-logout { background: #2a1111; color: #ff6b6b; border: 1px solid #4a1f1f; }
+        .auth-note {
+            margin-top: 10px;
+            color: #666673;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
         @media (max-width: 600px) {
             .row-grid, .row-split { grid-template-columns: 1fr; }
             .action-buttons { flex-direction: column; }
@@ -446,6 +497,27 @@
 
 </div>
 
+
+<div class="auth-container">
+    <div class="auth-title">🔐 Login Cloud Database</div>
+    <div id="auth-status" class="auth-status">Mode lokal. Isi konfigurasi Supabase agar riwayat terhubung antar perangkat.</div>
+    <div class="row-split">
+        <div>
+            <label for="auth-email">Email Admin</label>
+            <input type="email" id="auth-email" placeholder="admin@email.com">
+        </div>
+        <div>
+            <label for="auth-password">Password</label>
+            <input type="password" id="auth-password" placeholder="Minimal 6 karakter">
+        </div>
+    </div>
+    <div class="auth-actions">
+        <button class="btn-auth btn-login" onclick="loginAdmin()">Login</button>
+        <button class="btn-auth btn-register" onclick="daftarAdmin()">Daftar</button>
+        <button class="btn-auth btn-logout" onclick="logoutAdmin()">Logout</button>
+    </div>
+    <div class="auth-note">Mode data toko bersama: semua admin yang login dapat melihat riwayat order yang sama.</div>
+</div>
 
 
 <div class="container">
@@ -715,7 +787,158 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+
+    // ============================================================
+    // SETTING SUPABASE
+    // Ganti 2 baris ini dengan data dari Supabase:
+    // Supabase > Project Settings > API
+    // ============================================================
+    const SUPABASE_URL = "ISI_PROJECT_URL_SUPABASE_ANDA";
+    const SUPABASE_ANON_KEY = "ISI_ANON_PUBLIC_KEY_SUPABASE_ANDA";
+
+    const SUPABASE_AKTIF = SUPABASE_URL.startsWith("https://") && SUPABASE_ANON_KEY.length > 30;
+    const db = SUPABASE_AKTIF ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    let currentUser = null;
+
+    function setAuthStatus(text) {
+        const el = document.getElementById('auth-status');
+        if (el) el.innerText = text;
+    }
+
+    async function daftarAdmin() {
+        if (!SUPABASE_AKTIF) {
+            alert("Isi SUPABASE_URL dan SUPABASE_ANON_KEY dulu di index.html");
+            return;
+        }
+
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+
+        if (!email || !password) {
+            alert("Isi email dan password dulu.");
+            return;
+        }
+
+        const { data, error } = await db.auth.signUp({ email, password });
+
+        if (error) {
+            alert("Gagal daftar: " + error.message);
+            return;
+        }
+
+        alert("Akun berhasil dibuat. Jika Supabase meminta verifikasi email, cek inbox email. Jika tidak, silakan langsung login.");
+    }
+
+    async function loginAdmin() {
+        if (!SUPABASE_AKTIF) {
+            alert("Isi SUPABASE_URL dan SUPABASE_ANON_KEY dulu di index.html");
+            return;
+        }
+
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+
+        if (!email || !password) {
+            alert("Isi email dan password dulu.");
+            return;
+        }
+
+        const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+        if (error) {
+            alert("Gagal login: " + error.message);
+            return;
+        }
+
+        currentUser = data.user;
+        setAuthStatus("Login sebagai: " + currentUser.email + " | Data tersimpan di database toko bersama.");
+        await loadRiwayatCloud();
+    }
+
+    async function logoutAdmin() {
+        if (!SUPABASE_AKTIF) return;
+        await db.auth.signOut();
+        currentUser = null;
+        daftarRiwayat = [];
+        renderTabelRiwayat();
+        rekapResellerBulanan();
+        setAuthStatus("Logout. Silakan login untuk membuka riwayat cloud.");
+    }
+
+    function mapRowCloudToLocal(row) {
+        return {
+            id: row.id,
+            waktu: row.waktu || '',
+            tanggal: row.tanggal || '',
+            bulan: row.bulan || (row.tanggal ? String(row.tanggal).slice(0, 7) : ''),
+            nama: row.nama || 'Tanpa Nama',
+            bahan: row.bahan || '-',
+            laminasi: row.laminasi || '-',
+            dimensi: row.dimensi || '-',
+            lebar: Number(row.lebar || 0),
+            panjang: Number(row.panjang || 0),
+            qty: Number(row.qty || 1),
+            cutting: !!row.cutting,
+            biayaTambahan: Number(row.biaya_tambahan || 0),
+            marginPct: Number(row.margin_pct || 0),
+            numModal: Number(row.num_modal || 0),
+            numJual: Number(row.num_jual || 0)
+        };
+    }
+
+    async function loadRiwayatCloud() {
+        if (!SUPABASE_AKTIF || !currentUser) return;
+
+        const { data, error } = await db
+            .from('calculator_history')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            alert("Gagal mengambil riwayat cloud: " + error.message);
+            return;
+        }
+
+        daftarRiwayat = (data || []).map(mapRowCloudToLocal);
+        renderTabelRiwayat();
+        rekapResellerBulanan();
+    }
+
+    async function initCloudAtauLokal() {
+        if (!SUPABASE_AKTIF) {
+            setAuthStatus("Mode lokal. Isi konfigurasi Supabase agar riwayat terhubung antar perangkat.");
+            const riwayatLama = localStorage.getItem('fastquote_history');
+            if (riwayatLama) daftarRiwayat = JSON.parse(riwayatLama);
+            migrasiRiwayatLama();
+            return;
+        }
+
+        const { data } = await db.auth.getSession();
+        currentUser = data.session?.user || null;
+
+        db.auth.onAuthStateChange(async (_event, session) => {
+            currentUser = session?.user || null;
+            if (currentUser) {
+                setAuthStatus("Login sebagai: " + currentUser.email + " | Data tersimpan di database toko bersama.");
+                await loadRiwayatCloud();
+            } else {
+                setAuthStatus("Belum login. Login agar riwayat tersimpan dan tampil di semua perangkat.");
+                daftarRiwayat = [];
+                renderTabelRiwayat();
+                rekapResellerBulanan();
+            }
+        });
+
+        if (currentUser) {
+            setAuthStatus("Login sebagai: " + currentUser.email + " | Data tersimpan di database toko bersama.");
+            await loadRiwayatCloud();
+        } else {
+            setAuthStatus("Belum login. Login agar riwayat tersimpan dan tampil di semua perangkat.");
+        }
+    }
+
 
     const dataHarga = {
 
@@ -940,7 +1163,7 @@
 
 
 
-    function simpanKeRiwayatLokal() {
+    async function simpanKeRiwayatLokal() {
 
         const sekarang = new Date();
 
@@ -952,9 +1175,40 @@
 
         const recordBaru = { waktu: jamStr, tanggal: tanggalStr, bulan: bulanStr, ...currentDataRecord };
 
-        daftarRiwayat.unshift(recordBaru);
+        if (SUPABASE_AKTIF && currentUser) {
+            const { data, error } = await db
+                .from('calculator_history')
+                .insert({
+                    created_by: currentUser.id,
+                    waktu: recordBaru.waktu,
+                    tanggal: recordBaru.tanggal,
+                    bulan: recordBaru.bulan,
+                    nama: recordBaru.nama,
+                    bahan: recordBaru.bahan,
+                    laminasi: recordBaru.laminasi,
+                    dimensi: recordBaru.dimensi,
+                    lebar: recordBaru.lebar,
+                    panjang: recordBaru.panjang,
+                    qty: recordBaru.qty,
+                    cutting: recordBaru.cutting,
+                    biaya_tambahan: recordBaru.biayaTambahan,
+                    margin_pct: recordBaru.marginPct,
+                    num_modal: recordBaru.numModal,
+                    num_jual: recordBaru.numJual
+                })
+                .select()
+                .single();
 
-        localStorage.setItem('fastquote_history', JSON.stringify(daftarRiwayat));
+            if (error) {
+                alert("Gagal simpan ke database cloud: " + error.message);
+                return;
+            }
+
+            daftarRiwayat.unshift(mapRowCloudToLocal(data));
+        } else {
+            daftarRiwayat.unshift(recordBaru);
+            localStorage.setItem('fastquote_history', JSON.stringify(daftarRiwayat));
+        }
 
         renderTabelRiwayat();
 
@@ -1369,23 +1623,40 @@
         }, 'image/png');
     }
 
-    function hapusSemuaRiwayat() { if (confirm("Hapus semua riwayat di perangkat ini?")) { daftarRiwayat = []; localStorage.removeItem('fastquote_history'); renderTabelRiwayat(); rekapResellerBulanan(); } }
+    async function hapusSemuaRiwayat() {
+        if (SUPABASE_AKTIF && currentUser) {
+            if (confirm("Hapus semua riwayat toko di database cloud? Data akan hilang untuk semua admin.")) {
+                const { error } = await db.from('calculator_history').delete().neq('id', 0);
+                if (error) {
+                    alert("Gagal hapus riwayat cloud: " + error.message);
+                    return;
+                }
+                daftarRiwayat = [];
+                renderTabelRiwayat();
+                rekapResellerBulanan();
+            }
+            return;
+        }
 
-    window.onload = function() {
+        if (confirm("Hapus semua riwayat di perangkat ini?")) {
+            daftarRiwayat = [];
+            localStorage.removeItem('fastquote_history');
+            renderTabelRiwayat();
+            rekapResellerBulanan();
+        }
+    }
 
-        const riwayatLama = localStorage.getItem('fastquote_history');
-
-        if (riwayatLama) daftarRiwayat = JSON.parse(riwayatLama);
-
-        migrasiRiwayatLama();
+    window.onload = async function() {
 
         const bulanInput = document.getElementById('bulan-reseller');
 
         if (bulanInput) bulanInput.value = formatTanggalLokal(new Date()).slice(0, 7);
 
-        renderTabelRiwayat();
-
         initBahan();
+
+        await initCloudAtauLokal();
+
+        renderTabelRiwayat();
 
         rekapResellerBulanan();
 
