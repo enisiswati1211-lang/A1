@@ -892,7 +892,7 @@
         if (!SUPABASE_AKTIF || !currentUser) return;
 
         const { data, error } = await db
-            .from('calculator_history')
+            .from('fastquote_history')
             .select('*')
             .order('created_at', { ascending: false });
 
